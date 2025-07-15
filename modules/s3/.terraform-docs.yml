@@ -1,0 +1,62 @@
+formatter: "markdown table"
+
+header-from: main.tf
+
+content: |-
+  # S3 Storage Module 📦
+  
+  **What it does:** Secure file storage for GoGreen Insurance documents with KMS encryption.
+  
+  **Key Features:**
+  - Military-grade encryption using customer-managed KMS keys
+  - Bucket policies with least-privilege access
+  - Versioning enabled for data protection
+  - Cross-region replication ready
+  
+  ## Usage
+  
+  ```hcl
+  module "s3_bucket" {
+    source = "./modules/s3"
+    
+    bucket_name         = "gogreen-insurance"
+    allowed_principals  = ["arn:aws:iam::123456789012:role/EC2toS3IAMRole"]
+    tags               = var.common_tags
+  }
+  ```
+  
+  {{ .Requirements }}
+  
+  {{ .Providers }}
+  
+  {{ .Inputs }}
+  
+  {{ .Outputs }}
+  
+  {{ .Resources }}
+
+output:
+  file: "README.md"
+  mode: inject
+  template: |-
+    <!-- BEGIN_TF_DOCS -->
+    {{ .Content }}
+    <!-- END_TF_DOCS -->
+
+sort:
+  enabled: true
+  by: name
+
+settings:
+  anchor: true
+  color: true
+  default: true
+  escape: true
+  hide-empty: false
+  html: true
+  indent: 2
+  lockfile: true
+  read-comments: true
+  required: true
+  sensitive: true
+  type: true

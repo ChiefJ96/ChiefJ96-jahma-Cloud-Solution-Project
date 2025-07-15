@@ -1,18 +1,8 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 6.0"
-    }
-  }
-}
-
-provider "aws" {
-  region = var.region
-}
+# FIXED: Removed provider configuration from module - should be in root configuration
+# Provider blocks should not be in modules, they belong in the root configuration
 
 resource "aws_launch_template" "main" {
-  name_prefix   =          var.launch_template.prefix
+  name_prefix            = var.launch_template.prefix
   image_id               = var.launch_template.ami
   instance_type          = var.launch_template.instance_class
   description            = var.launch_template.description
@@ -27,43 +17,44 @@ resource "aws_launch_template" "main" {
 
 resource "aws_autoscaling_group" "main" {
   vpc_zone_identifier = var.scaling_group.subnet_ids
-  desired_capacity   = var.scaling_group.desired_capacity
-  max_size           = var.scaling_group.max_size
-  min_size           = var.scaling_group.min_size
+  desired_capacity    = var.scaling_group.desired_capacity
+  max_size            = var.scaling_group.max_size
+  min_size            = var.scaling_group.min_size
   launch_template {
-    id = aws_launch_template.main.id
+    id      = aws_launch_template.main.id
     version = "$Latest"
   }
   dynamic "tag" {
     for_each = var.tags
     content {
-      key = tag.key
-      value = tag.value
+      key                 = tag.key
+      value               = tag.value
       propagate_at_launch = true
     }
   }
-  target_group_arns = var.attach_to_lb ? [var.lb_arn] : [""]
+  # FIXED: Updated to use renamed variable
+  target_group_arns = var.attach_to_lb ? [var.target_group_arn] : []
 }
 
 resource "aws_autoscaling_policy" "policies" {
-    for_each = var.scaling_policies
-    name                   = each.value.name
-    scaling_adjustment     = each.value.scaling_adjustment
-    adjustment_type        = each.value.adjustment_type
-    cooldown               = each.value.cooldown
-    autoscaling_group_name = aws_autoscaling_group.main.name
-    policy_type = "SimpleScaling"
+  for_each               = var.scaling_policies
+  name                   = each.value.name
+  scaling_adjustment     = each.value.scaling_adjustment
+  adjustment_type        = each.value.adjustment_type
+  cooldown               = each.value.cooldown
+  autoscaling_group_name = aws_autoscaling_group.main.name
+  policy_type            = "SimpleScaling"
 }
 
-# Attach the Auto Scaling Group to the ALB target group
+# FIXED: Updated auto scaling attachment to use correct variable name
 resource "aws_autoscaling_attachment" "my_asg_attachment" {
-  count = var.attach_to_lb ? 1 : 0
-    autoscaling_group_name = aws_autoscaling_group.main.name
-    lb_target_group_arn = var.lb_arn
+  count                  = var.attach_to_lb ? 1 : 0
+  autoscaling_group_name = aws_autoscaling_group.main.name
+  lb_target_group_arn    = var.target_group_arn
 }
 
 resource "aws_cloudwatch_metric_alarm" "reduce_ec2_alarm" {
-  for_each = var.cloudwatch_alarms
+  for_each                  = var.cloudwatch_alarms
   alarm_name                = each.value.name
   comparison_operator       = each.value.comparison_operator
   evaluation_periods        = each.value.evaluation_periods

@@ -1,7 +1,107 @@
+# Terraform Files to Ignore
+# ========================
+
+# Local .terraform directories
 .terraform
 .terraform/**
-.terraform.lock.hcl
+**/.terraform/*
+
+# Terraform state files - CRITICAL: these contain sensitive information!
 .tfstate
 *.tfstate
+*.tfstate.*
 terraform.tfstate*
+
+# Terraform lock file (uncomment if you want to exclude it)
+.terraform.lock.hcl
+
+# Terraform variable files - these may contain sensitive data
+*.tfvars
+*.tfvars.json
+
+# Terraform plan output files
+*.tfplan
+plan_output.txt
+terraform_apply_results.txt
+terraform_destroy_results.txt
+
+# Test files that shouldn't be committed
 auto_scaling_test_code.tf
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Override files (usually for local development)
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# CLI configuration files
+.terraformrc
+terraform.rc
+
+# AWS CLI credentials - NEVER commit these!
+# ==========================================
+.aws/credentials
+.aws/config
+
+# Windows specific files
+# ======================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+# VS Code settings
+# ================
+.vscode/
+*.code-workspace
+
+# JetBrains IDEs
+# ==============
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# MacOS files
+# ===========
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux files
+# ===========
+*~
+.nfs*
+
+# Temporary and backup files
+# ==========================
+*.tmp
+*.temp
+*.log
+*.swp
+*.swo
+*.backup
+*.bak
+
+# Archive files
+# =============
+*.zip
+*.tar.gz
+*.rar
+
+# Binary executables (downloaded tools)
+# ====================================
+terraform-docs.exe
+terraform.exe
+
+# IMPORTANT: Files that WILL be committed
+!.gitignore
+!.terraform.lock.hcl
+!.tfvars
+!.tfvars.json
+
