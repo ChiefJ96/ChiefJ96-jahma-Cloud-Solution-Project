@@ -37,7 +37,6 @@ resource "aws_iam_group" "monitor" {
 #############################
 
 resource "aws_iam_user" "sysadmin_users" {
-  # FIXED: Changed from toset() to direct map usage since var.users.sysadmin is a map(string)
   for_each = var.users.sysadmin
   name     = each.value
 
@@ -52,7 +51,7 @@ resource "aws_iam_user_group_membership" "sysadmin_memberships" {
 }
 
 resource "aws_iam_user" "dbadmin_users" {
-  # FIXED: Changed from toset() to direct map usage since var.users.dbadmin is a map(string)
+
   for_each = var.users.dbadmin
   name     = each.value
 

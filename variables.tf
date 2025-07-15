@@ -1,4 +1,3 @@
-
 variable "aws_region" {
   description = "AWS region to deploy resources"
   type        = string
@@ -106,4 +105,22 @@ variable "common_tags" {
     Project   = "GoGreenInsurance"
     ManagedBy = "Terraform"
   }
+}
+
+variable "environment" {
+  description = "Environment name"
+  type        = string
+  default     = "production"
+}
+
+variable "bucket_name" {
+  description = "Base name for S3 bucket"
+  type        = string
+  default     = "gogreen-insurance"
+}
+
+variable "alb_name" {
+  description = "Name for the Application Load Balancer"
+  type        = string
+  default     = "gogreen-alb"
 }
