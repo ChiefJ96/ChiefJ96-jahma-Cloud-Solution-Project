@@ -1,3 +1,8 @@
+# S3 MODULE - SECURE STORAGE CONFIGURATION
+# This module provides encrypted S3 storage for the GoGreen Insurance application
+# Implements security best practices with KMS encryption and access controls
+# Purpose: Stores application data, documents, and backups securely
+
 # FIXED: Removed terraform block from module - version constraints should only be in root configuration
 # S3 Module - Secure S3 bucket with KMS encryption
 
@@ -6,16 +11,36 @@ resource "aws_kms_key" "s3_key" {
   deletion_window_in_days = 10
   enable_key_rotation     = true
 }
+# Purpose: Creates a customer-managed KMS key for S3 bucket encryption
+# Security: Provides encryption at rest with customer-controlled key management
+# Key Rotation: Automatically rotates encryption keys annually for enhanced security
+# Deletion Protection: 10-day window prevents accidental key deletion
+# Compliance: Meets regulatory requirements for data encryption
+# Performance: Minimal impact on S3 read/write operations
+# Cost: More expensive than default S3 encryption but provides greater control
 
 resource "aws_kms_alias" "s3_key_alias" {
   name          = "alias/s3-encryption-key"
   target_key_id = aws_kms_key.s3_key.key_id
 }
+# Purpose: Creates a human-readable alias for the KMS encryption key
+# Management: Easier to reference in policies and configurations
+# Naming: Uses descriptive alias instead of complex key ID
+# Integration: Simplifies key management across multiple AWS services
+# Audit Trail: Easier to track key usage in CloudTrail logs
+# Best Practice: Always use aliases for better operational management
 
 resource "aws_s3_bucket" "bucket" {
   bucket = var.bucket_name
   tags   = var.tags
 }
+# Purpose: Creates the main S3 bucket for application data storage
+# Naming: Uses variable for flexible bucket naming across environments
+# Global Namespace: S3 bucket names must be globally unique across AWS
+# Tagging: Applies consistent tags for cost allocation and management
+# Durability: S3 provides 99.999999999% (11 9's) durability
+# Availability: Multiple availability zone replication for high availability
+# Use Cases: Application files, user uploads, backups, and static assets
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encryption" {
   bucket = aws_s3_bucket.bucket.id
@@ -28,6 +53,13 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_encryption
     bucket_key_enabled = true
   }
 }
+# Purpose: Enforces encryption for all objects stored in the S3 bucket
+# Algorithm: Uses AWS KMS (SSE-KMS) for server-side encryption
+# Default Encryption: All new objects automatically encrypted
+# Bucket Key: Reduces KMS API calls and costs for large numbers of objects
+# Data Protection: Ensures data is encrypted at rest in S3
+# Compliance: Required for handling sensitive insurance data
+# Performance: Transparent encryption/decryption with minimal latency
 
 resource "aws_s3_bucket_policy" "bucket_policy" {
   bucket = aws_s3_bucket.bucket.id
@@ -52,3 +84,11 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
     ]
   })
 }
+# Purpose: Defines fine-grained access control for the S3 bucket
+# Principle of Least Privilege: Only specified principals can access bucket
+# Allowed Actions: Read (GetObject), Write (PutObject), Delete (DeleteObject)
+# Principal Control: Restricts access to specific IAM users, roles, or accounts
+# Resource Scope: Applies permissions to all objects within the bucket
+# Security Layer: Additional protection beyond IAM policies
+# Business Context: Ensures only authorized application components access data
+# Audit Support: All access attempts logged in CloudTrail for compliance

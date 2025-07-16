@@ -12,6 +12,12 @@ resource "aws_lb" "this" {
 
   tags = var.tags
 }
+# Purpose: Creates the main Application Load Balancer for distributing incoming traffic
+# Usage: Internet-facing ALB that receives traffic from users and routes to backend servers
+# Configuration: Deployed across multiple public subnets for high availability
+# Security: Protected by security groups that control allowed inbound traffic
+# Flexibility: Deletion protection disabled for development/testing environments
+# Best Practice: Application-type load balancer supports HTTP/HTTPS and advanced routing
 
 resource "aws_lb_target_group" "this" {
   name     = "${var.alb_name}-tg"
@@ -30,6 +36,13 @@ resource "aws_lb_target_group" "this" {
 
   tags = var.tags
 }
+# Purpose: Defines a group of backend servers that will receive traffic from the load balancer
+# Usage: ALB routes traffic to healthy targets in this group based on health check results
+# Health Monitoring: Checks /health endpoint every 30 seconds with 5-second timeout
+# Failover Logic: 5 consecutive healthy checks to mark healthy, 2 unhealthy to mark unhealthy
+# Protocol: HTTP on port 80 for web application traffic
+# Integration: Must be in same VPC as the load balancer for internal communication
+# Best Practice: Health checks ensure only healthy servers receive traffic
 
 resource "aws_lb_listener" "frontend" {
   load_balancer_arn = aws_lb.this.arn
@@ -41,3 +54,10 @@ resource "aws_lb_listener" "frontend" {
     target_group_arn = aws_lb_target_group.this.arn
   }
 }
+# Purpose: Defines how the load balancer listens for incoming traffic and routes it
+# Usage: Listens on port 80 for HTTP traffic and forwards to the target group
+# Traffic Flow: Internet -> ALB Listener -> Target Group -> Backend Servers
+# Protocol: HTTP for web traffic (can be extended to HTTPS with SSL certificates)
+# Routing: Simple forward action sends all traffic to target group (can be enhanced with rules)
+# Integration: Links the load balancer to target group for complete traffic path
+# Best Practice: Single listener for basic HTTP traffic, expandable for complex routing needs
