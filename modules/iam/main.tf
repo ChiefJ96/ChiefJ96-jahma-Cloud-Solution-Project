@@ -1,4 +1,3 @@
-// modules/iam/main.tf
 
 #############################
 # IAM Account Password Policy

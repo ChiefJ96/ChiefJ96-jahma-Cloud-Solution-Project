@@ -40,3 +40,27 @@ variable "kms_key_id" {
   type        = string
   default     = null
 }
+
+variable "subnet_ids" {
+  description = "List of subnet IDs where instances will be launched"
+  type        = list(string)
+  default     = []
+}
+
+variable "security_group_ids" {
+  description = "List of security group IDs to attach to instances"
+  type        = list(string)
+  default     = []
+}
+
+variable "user_data" {
+  description = "Base64 encoded user data script to run on instance startup"
+  type        = string
+  default     = ""
+}
+
+variable "iam_instance_profile" {
+  description = "IAM instance profile name for EC2 instances"
+  type        = string
+  default     = null
+}
